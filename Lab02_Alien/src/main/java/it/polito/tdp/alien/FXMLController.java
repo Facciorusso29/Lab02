@@ -1,5 +1,6 @@
 package it.polito.tdp.alien;
 
+import java.util.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -34,35 +35,55 @@ public class FXMLController {
     	txtResult.clear();
     	txtTesto.clear();
     }
-
+    
     @FXML
     void doTranslate(ActionEvent event) {
-    	String s = txtTesto.getText();
+    	String s = txtTesto.getText().toLowerCase();
+    	String traduzione;
     	String campi[]=s.split(" ");
-    	if(campi.length==1) {
-    		String alienWord= campi[0].toLowerCase();
-    		if (!alienWord.matches("[a-z]*")) {
-    			txtResult.appendText("Sono validi solo caratteri alfanumerici \n");
-        		return;
-        	}
-    		String traduzione= dizionario.translateWord(alienWord);
-    		if(traduzione!=null)
-    			txtResult.appendText(traduzione+ "\n");
-    		else
-    			txtResult.appendText("Traduzione non trovata \n");
-    	}else if(campi.length==2) {
-    		String alienWord= campi[0].toLowerCase();
-    		String traduzione= campi[1].toLowerCase();
-    		if (!alienWord.matches("[a-z]*") || !traduzione.matches("[a-z]*")) {
-    			txtResult.appendText("Sono validi solo caratteri alfanumerici \n");
-        		return;
-        	}
-    		dizionario.addWord(alienWord, traduzione);
-    		txtResult.appendText("La parola: \"" + alienWord + "\", con traduzione: \"" + traduzione + "\", è stata inserita nel dizionario. \n");
-    		
-    	}else {
-    		txtResult.appendText("Inserire la parola da tradurre o la parola da aggiungere al dizionario con relativa traduzione");
+    	if(campi.length==0) {
+    		txtResult.setText("Inserire almeno una parola!");
     	}
+    		else if(campi.length==1) {
+    			String alienWord= campi[0];
+    			if (!alienWord.matches("[a-z?]*")) {
+    				txtResult.setText("Sono validi solo caratteri alfanumerici \n");
+    				return;
+    			}
+    			if(alienWord.contains("?")) {
+    				System.out.println("ok");
+    				traduzione=dizionario.translateWordWildCard(alienWord);
+    				if(traduzione!=null) {
+        				txtResult.setText(traduzione);
+        			}else
+        				txtResult.setText("Traduzione non trovata \n");
+    			}else {
+    				// String traduzione= dizionario.translateWord(alienWord);
+        			traduzione= dizionario.translateWord(alienWord);
+        			if(traduzione!=null) {
+        				txtResult.setText(traduzione);
+        			}else
+        				txtResult.setText("Traduzione non trovata \n");
+    			}
+    			
+    			
+    			
+    			}else if(campi.length==2) {
+    				String alienWord= campi[0];
+    				traduzione= campi[1];
+    
+    			
+    		
+    				if (!alienWord.matches("[a-z]*") || !traduzione.matches("[a-z]*")) {
+    					txtResult.setText("Sono validi solo caratteri alfanumerici \n");
+    					return;
+    				}
+    				dizionario.addWord(alienWord, traduzione);
+    				txtResult.setText("La parola: \"" + alienWord + "\", con traduzione: \"" + traduzione+ "\", è stata inserita nel dizionario. \n");
+    		
+    				}else {
+    					txtResult.setText("Inserire al massimo due parole!");
+    				}
     		
     	
     	}
